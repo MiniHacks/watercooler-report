@@ -2,7 +2,7 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
-@app.on_event("start_up")
+@app.on_event("startup")
 def start_up():
   print("Starting server.")
 
