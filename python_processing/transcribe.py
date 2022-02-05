@@ -3,7 +3,7 @@ from typing import List
 from google.cloud import speech
 import ffmpeg
 from pathlib import Path
-from python_processing.gcs import credentials, storage_client
+from gcs import credentials, storage_client
 
 def transcribe_video(filename: Path):
     bucket_name = "violet-harassment-videos"
@@ -66,5 +66,5 @@ def transcribe_video(filename: Path):
     return response.results
 
 if __name__ == "__main__":
-    f = 'ted.mp4'
+    f = Path('./python_processing/ted.mp4')
     t = transcribe_video(f)
