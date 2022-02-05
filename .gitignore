@@ -53,3 +53,6 @@ yarn-error.log*
 #python env
 **/venv
 **/__pycache__
+
+# Key!
+violet-harassment-e63f719390aa.json
