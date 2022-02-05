@@ -6,6 +6,7 @@ from pathlib import Path
 from python_processing.gcs import credentials, storage_client
 
 def transcribe_video(filename: Path):
+    bucket_name = "violet-harassment-videos"
     stem = filename.stem
     out_file = stem + ".wav"
 
@@ -19,19 +20,17 @@ def transcribe_video(filename: Path):
     ffmpeg.run(stream)
     print("Finished ffmpeg conversion.")
 
-    ## this is now imported
-    # storage_client = storage.Client(project="gooseninja", credentials=credentials)
     speech_client = speech.SpeechClient(credentials=credentials)
 
     destination = f"{stem}_wav_blob"
-    bucket = storage_client.bucket("covert_goose_videos")
+    bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(destination)
 
     blob.upload_from_filename(out_file)
 
     print(f"Uploaded {out_file} to {destination}.")
 
-    uri=f"gs://covert_goose_videos/{destination}"
+    uri=f"gs://{bucket_name}/{destination}"
     audio = speech.RecognitionAudio(uri=uri)
 
 
