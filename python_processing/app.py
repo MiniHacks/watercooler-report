@@ -5,6 +5,8 @@ from tensorflow.keras.layers import (LSTM, Activation, Bidirectional, Dense,
 from tensorflow.keras.models import Model
 import tensorflow.keras.backend as K
 import numpy as np
+from typing import List
+from random import randint
 
 app = FastAPI()
 
@@ -86,18 +88,39 @@ model.load_weights(model_weights)
 @app.on_event("startup")
 def start_up():
   print("Starting server.")
+  
+@app.post("/upload")
+async def upload(file: UploadFile = File(...)):
+  if not os.path.isdir("./files"):
+    os.mkdir("./files")
+
+  uri = uuid.uuid4()
+  path = str(uri) + "." + file.filename.split(".")[-1]
+  with open("./files/" + path, "wb+") as output:
+    output.write(file.file.read())
+    output.close()
+  return {"uri": uri}
 
 @app.get("/")
 async def root():
   return "Hello world!"
 
-@app.get("/process_media/{uri}")
-def process_video(uri: str):
+@app.get("/process_segments/{uri}")
+def process_video(segments: List[str]):
   """
-  processes a given video, returns schema TBD
+  processes a given set of segments, returns certainty [0-1] of harassment per segment.
 
-  uri -- gcs uri of media resource to process
+  segments -- list of strings
+
+  returns 
+  {
+    result: [(segment, certainty), ...]
+  }
   """
+  return {"result": list(map(
+    lambda segment: (segment, 0 if randint(0,10) <= 3 else randint(40,100)/100),
+    segments
+  ))}
 
 @app.get("/test")
 def test_schema():
