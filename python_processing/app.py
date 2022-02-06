@@ -69,6 +69,7 @@ def preprocess(s):
   s = contractions.fix(s)
   # remove special characters
   s = re.sub(r'[^a-zA-Z0-9\s]', '', s)
+  return s
 
 word_to_index, index_to_word, word_to_vec_map = read_glove_vecs(embedding_fn)
 
@@ -116,10 +117,13 @@ def process_video(segments: List[str]):
   }
   """
   cleaned_segments = map(preprocess, segments)
+  segment_indices = sentences_to_indices(cleaned_segments, word_to_index)
+
+  predictions = model.predict(segment_indices) # could set workers = ...?
 
   return {"result": list(map(
-    lambda segment: (segment, 0 if randint(0,10) <= 3 else randint(40,100)/100),
-    cleaned_segments
+    lambda pair: (pair[0], predictions[1][1]),
+    zip(segments, predictions)
   ))}
 
 @app.get("/test")
