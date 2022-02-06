@@ -24,6 +24,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+import json
 
 ML_ENDPOINT = "http://34.67.45.8/process_segments"
 ADMIN = "hoyle020@umn.edu"
@@ -32,7 +33,7 @@ THRESHOLD = 0.4
 
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
+SCOPES = ['https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/gmail.readonly', 'https://www.googleapis.com/auth/gmail.compose']
 
 # Parses the body for most words
 def parse(body):
@@ -48,10 +49,13 @@ def parse(body):
 # incidates some form of sexual harassment.
 def determine(service, body, fromUser):
     name = None
-    response = requests.post(ML_ENDPOINT, json={"segments": body})
+    response = requests.get(ML_ENDPOINT, data=json.dumps([body]))
     response = response.json()
-    for segment, certainty in response["result"]:
+    for cur in response["result"]:
+        certainty = cur["rating"]
+        segment = cur["segment"]
         if certainty > THRESHOLD:
+            name = fromUser
             send_message(service, create_message(fromUser, segment, certainty))
             break
     return name
@@ -73,7 +77,8 @@ def create_message(name, segment, certainty):
   message['to'] = ADMIN
   message['from'] = USER
   message['subject'] = "Report - Misconduct"
-  return {'raw': base64.urlsafe_b64encode(message.as_string())}
+  # print(message.as_string())
+  return {'raw': base64.urlsafe_b64encode(message.as_string().encode("utf-8")).decode()}
 
 def send_message(service, message):
   """Send an email message.
@@ -87,13 +92,13 @@ def send_message(service, message):
   Returns:
     Sent Message.
   """
-  try:
-    message = (service.users().messages().send(userId='me', body=message)
-               .execute())
-    print('Message Id: %s' % message['id'])
-    return message
-  except HttpError as error:
-    print('An error occurred: %s' % error)
+  # try:
+  message = (service.users().messages().send(userId='me', body=message)
+              .execute())
+  print('Message Id: %s' % message['id'])
+  return message
+  # except HttpError as error:
+  #   print('An error occurred: %s' % error)
 
 
 def main():
@@ -143,6 +148,8 @@ def main():
                 if d['name'] == 'From':
                     sender = d['value']
   
+            if payload.get('parts') is None:
+                continue
             parts = payload.get('parts')[0]
             data = parts['body']['data']
             data = data.replace("-","+").replace("_","/")
