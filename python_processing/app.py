@@ -8,6 +8,7 @@ import numpy as np
 from typing import List
 from random import randint
 import re
+import contractions
 
 app = FastAPI()
 
@@ -61,6 +62,14 @@ def sentences_to_indices(X, word_to_index, max_len=100):
             j = j + 1
     return X_indices
 
+def preprocess(s):
+  special_char_pattern = re.compile(r'([{.(-)!}])')
+  s = special_char_pattern.sub(" \\1 ", s)
+  # expand contractions
+  s = contractions.fix(s)
+  # remove special characters
+  s = re.sub(r'[^a-zA-Z0-9\s]', '', s)
+
 word_to_index, index_to_word, word_to_vec_map = read_glove_vecs(embedding_fn)
 
 sentence_indices = Input(shape=(MAX_TOKENS,), dtype='int32')
@@ -106,12 +115,11 @@ def process_video(segments: List[str]):
     result: [(segment, certainty), ...]
   }
   """
-  # strip special characters
-  cleaned_segments = map(lambda x: re.sub(r'[^a-zA-Z0-9\s]', '', x), segments)
+  cleaned_segments = map(preprocess, segments)
 
   return {"result": list(map(
     lambda segment: (segment, 0 if randint(0,10) <= 3 else randint(40,100)/100),
-    segments
+    cleaned_segments
   ))}
 
 @app.get("/test")
