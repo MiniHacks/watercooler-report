@@ -7,6 +7,7 @@ import tensorflow.keras.backend as K
 import numpy as np
 from typing import List
 from random import randint
+import re
 
 app = FastAPI()
 
@@ -105,6 +106,9 @@ def process_video(segments: List[str]):
     result: [(segment, certainty), ...]
   }
   """
+  # strip special characters
+  cleaned_segments = map(lambda x: re.sub(r'[^a-zA-Z0-9\s]', '', x), segments)
+
   return {"result": list(map(
     lambda segment: (segment, 0 if randint(0,10) <= 3 else randint(40,100)/100),
     segments
