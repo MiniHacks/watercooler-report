@@ -26,7 +26,7 @@ MESSAGE_BLOCK = {
 }
 
 ML_ENDPOINT = "http://localhost:8000/process_segments"
-THRESHOLD = 0.85
+THRESHOLD = 0.4
 ADMIN_ID = "U031UB8QE3V"
 ADMIN_PN = "+19526669929"
 
