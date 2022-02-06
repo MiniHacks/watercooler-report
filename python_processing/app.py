@@ -9,13 +9,12 @@ from typing import List
 from random import randint
 import re
 import contractions
+import numpy as np
 
 app = FastAPI()
 
-
-
-embedding_fn = 'data/vectors.txt'                   # GloVe embeddings
-model_weights = "simple_lstm_glove_vectors.h5"  # Trained model weights
+embedding_fn = 'python_processing/vectors.txt'  # GloVe embeddings
+model_weights = "python_processing/simple_lstm_glove_vectors.h5"  # Trained model weights
 MAX_TOKENS = 100
 HIDDEN_LAYER_NODES = 128
 
@@ -104,7 +103,8 @@ def start_up():
 async def root():
   return "Hello world!"
 
-@app.get("/process_segments/")
+@app.post("/process_segments")
+@app.get("/process_segments")
 def process_video(segments: List[str]):
   """
   processes a given set of segments, returns certainty [0-1] of harassment per segment.
@@ -116,13 +116,15 @@ def process_video(segments: List[str]):
     result: [(segment, certainty), ...]
   }
   """
-  cleaned_segments = map(preprocess, segments)
+  cleaned_segments = np.array(list(map(preprocess, segments)))
   segment_indices = sentences_to_indices(cleaned_segments, word_to_index)
 
   predictions = model.predict(segment_indices) # could set workers = ...?
 
+  predictions = list(map(lambda x: list(x), list(predictions)))
+
   return {"result": list(map(
-    lambda pair: (pair[0], predictions[1][1]),
+    lambda pair: {"segment":pair[0], "rating":float(pair[1][1])},
     zip(segments, predictions)
   ))}
 
