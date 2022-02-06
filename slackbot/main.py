@@ -25,7 +25,7 @@ MESSAGE_BLOCK = {
     },
 }
 
-ML_ENDPOINT = "http:/34.67.45.8/process_segments"
+ML_ENDPOINT = "http://34.67.45.8/process_segments"
 THRESHOLD = 0.4
 ADMIN_ID = "U031UB8QE3V"
 ADMIN_PN = "+19526669929"
@@ -59,7 +59,9 @@ def message(payload):
     print(response)
 
     response = response.json()
-    for segment, certainty in response["result"]:
+    for cur in response["result"]:
+        certainty = cur["rating"]
+        segment = cur["segment"]
         if certainty > THRESHOLD:
             name = get_real_name(event.get("user"))
             alert_admin(name, segment, certainty)
