@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
 from tensorflow.keras.layers import (LSTM, Activation, Bidirectional, Dense,
                                      Dropout, Flatten, Input, Lambda, Multiply,
                                      Permute, RepeatVector, Embedding)
@@ -89,23 +89,11 @@ model.load_weights(model_weights)
 def start_up():
   print("Starting server.")
   
-@app.post("/upload")
-async def upload(file: UploadFile = File(...)):
-  if not os.path.isdir("./files"):
-    os.mkdir("./files")
-
-  uri = uuid.uuid4()
-  path = str(uri) + "." + file.filename.split(".")[-1]
-  with open("./files/" + path, "wb+") as output:
-    output.write(file.file.read())
-    output.close()
-  return {"uri": uri}
-
 @app.get("/")
 async def root():
   return "Hello world!"
 
-@app.get("/process_segments/{uri}")
+@app.get("/process_segments/")
 def process_video(segments: List[str]):
   """
   processes a given set of segments, returns certainty [0-1] of harassment per segment.
