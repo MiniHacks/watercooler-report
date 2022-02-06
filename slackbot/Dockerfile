@@ -6,6 +6,7 @@ RUN pip install flask
 RUN pip install requests
 RUN pip install slackclient
 RUN pip install slackeventsapi
+RUN pip install twilio
 
 COPY . .
 
