@@ -11,7 +11,7 @@ app = FastAPI()
 
 
 embedding_fn = 'data/vectors.txt'                   # GloVe embeddings
-model_weights = "simple_lstm_glove_vectors_val.h5"  # Trained model weights
+model_weights = "simple_lstm_glove_vectors.h5"  # Trained model weights
 MAX_TOKENS = 100
 HIDDEN_LAYER_NODES = 128
 
@@ -45,6 +45,18 @@ def read_glove_vecs(glove_file):
             index_to_words[i] = w
             i = i + 1
     return words_to_index, index_to_words, word_to_vec_map
+
+def sentences_to_indices(X, word_to_index, max_len=100):
+    m = X.shape[0] # number of examples
+    X_indices = np.zeros((m, max_len)) # If there is more than one dimension use ()
+    for i in range(m): # loop over training examples
+        sentence_words = X[i].lower().split()
+        j = 0
+        for w in sentence_words:
+            if j < max_len and w in word_to_index:
+                X_indices[i, j] = word_to_index[w]
+            j = j + 1
+    return X_indices
 
 word_to_index, index_to_word, word_to_vec_map = read_glove_vecs(embedding_fn)
 
