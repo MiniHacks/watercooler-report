@@ -60,20 +60,19 @@ def transcribe_video(filename: Path):
 
     print(f"Finished operation.")
 
+    """
     for i, result in enumerate(response.results):
             print(f"Result {i}: {result.alternatives[0].transcript}")
+    """
 
     return response.results
 
 def convert_to_text(sections):
-    raw_words = []
-    for section in sections:
-        for word in section.alternatives[0].words:
-            raw_words.append(word.word)
-    lecture_text = " ".join(raw_words)
-    return lecture_text
+    return " ".join(map(lambda x: x.word, sections[-1].alternatives[0].words))
 
 if __name__ == "__main__":
-    f = Path('./python_processing/ted.mp4')
+    f = Path('./harass.mkv')
     t = transcribe_video(f)
-    print(convert_to_text(t))
+    video_text = convert_to_text(t)
+
+    print(f"{video_text=}")
