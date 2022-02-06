@@ -39,7 +39,7 @@ def text_admin(message):
     return message
 
 def alert_admin(name, segment, certainty):
-    MESSAGE_BLOCK["text"]["text"] = "{name}'s message was flagged for harrassment. Please review the follow message: \n`\"{segment}\"`\n The system is {certainty}% certain this was inapporiate comment.".format(name=name, segment=segment.strip(), certainty=certainty * 100)
+    MESSAGE_BLOCK["text"]["text"] = "We've flagger {name}'s message for sexual harassment with {certainty}% certainty: \n`\"{segment}\"`\n If you deem this to be a case of sexual harassment, look to www.rainn.org/, www.womenagainstabuse.org/, leanin.org/ for resources.".format(name=name, segment=segment.strip(), certainty=certainty * 100)
     to_send = {"channel": ADMIN_ID, "blocks": [MESSAGE_BLOCK]}
     text_admin(MESSAGE_BLOCK["text"]["text"])
     result = swc.chat_postMessage(**to_send)
@@ -54,16 +54,15 @@ def message(payload):
     text = event.get("text")
     channel = event.get("channel")
 
-    # sentences = sentence_splitter.split_into_sentences(text)
-    # response = requests.post(ML_ENDPOINT, json={"segments": sentences})
-    # print(response)
+    sentences = sentence_splitter.split_into_sentences(text)
+    response = requests.post(ML_ENDPOINT, json={"segments": sentences})
+    print(response)
 
-    # response = response.json()
-    # for segment, certainty in response["result"]:
-    #     if certainty > THRESHOLD:
-    #         name = get_real_name(event.get("user"))
-    #         alert_admin(name, segment, certainty)
-    alert_admin("Someone", "Booty", 0.9)
+    response = response.json()
+    for segment, certainty in response["result"]:
+        if certainty > THRESHOLD:
+            name = get_real_name(event.get("user"))
+            alert_admin(name, segment, certainty)
     return
 
 if __name__ == "__main__":
