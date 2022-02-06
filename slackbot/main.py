@@ -39,7 +39,7 @@ def text_admin(message):
     return message
 
 def alert_admin(name, segment, certainty):
-    MESSAGE_BLOCK["text"]["text"] = "We've flagger {name}'s message for sexual harassment with {certainty}% certainty: \n`\"{segment}\"`\n If you deem this to be a case of sexual harassment, look to www.rainn.org/, www.womenagainstabuse.org/, leanin.org/ for resources.".format(name=name, segment=segment.strip(), certainty=certainty * 100)
+    MESSAGE_BLOCK["text"]["text"] = "We've flagger {name}'s message for sexual harassment with {certainty}% certainty: \n`\"{segment}\"`\n If you deem this to be a case of sexual harassment, look to www.rainn.org/, www.womenagainstabuse.org/, leanin.org/ for resources.".format(name=name, segment=segment.strip(), certainty=round(certainty * 100, 2))
     to_send = {"channel": ADMIN_ID, "blocks": [MESSAGE_BLOCK]}
     text_admin(MESSAGE_BLOCK["text"]["text"])
     result = swc.chat_postMessage(**to_send)

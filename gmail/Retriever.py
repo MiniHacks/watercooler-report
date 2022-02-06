@@ -27,7 +27,7 @@ from googleapiclient.errors import HttpError
 import json
 
 ML_ENDPOINT = "http://34.67.45.8/process_segments"
-ADMIN = "hoyle020@umn.edu"
+ADMIN = "lee02802@umn.edu"
 USER = "andrewhoyle@watercoolerreport.tech"
 THRESHOLD = 0.4
 
@@ -55,6 +55,8 @@ def determine(service, body, fromUser):
         certainty = cur["rating"]
         segment = cur["segment"]
         if certainty > THRESHOLD:
+            certainty *= 100
+            certainty = round(certainty, 2)
             name = fromUser
             send_message(service, create_message(fromUser, segment, certainty))
             break
@@ -157,8 +159,11 @@ def main():
   
             # Now, the data obtained is in lxml. So, we will parse 
             # it with BeautifulSoup library
-            soup = BeautifulSoup(decoded_data , "lxml")
-            body = soup.body()
+            try:
+                soup = BeautifulSoup(decoded_data , "lxml")
+                body = soup.body()
+            except Exception as e:
+                continue
   
             # Parse it down to smaller components
             body = parse(str(body))
