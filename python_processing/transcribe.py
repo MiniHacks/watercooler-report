@@ -71,7 +71,7 @@ def convert_to_text(sections):
     return " ".join(map(lambda x: x.word, sections[-1].alternatives[0].words))
 
 if __name__ == "__main__":
-    f = Path('./ted.mp4')
+    f = Path('./harass.mkv')
     t = transcribe_video(f)
     video_text = convert_to_text(t)
 
