@@ -4,7 +4,7 @@ from slackeventsapi import SlackEventAdapter
 import requests
 import sentence_splitter
 from twilio.rest import Client
-import sys
+import json
 
 app = Flask(__name__)
 BOT_USER_TOKEN = "xoxb-3062362679586-3062373690386-VVqLHe6283JdxAH7cGMAuVCi"
@@ -25,8 +25,8 @@ MESSAGE_BLOCK = {
     },
 }
 
-ML_ENDPOINT = "localhost:8000/process_segments"
-THRESHOLD = 0.85
+ML_ENDPOINT = "http:/34.67.45.8/process_segments"
+THRESHOLD = 0.4
 ADMIN_ID = "U031UB8QE3V"
 ADMIN_PN = "+19526669929"
 
@@ -52,10 +52,10 @@ def message(payload):
         return
 
     text = event.get("text")
-    channel = event.get("channel")
 
     sentences = sentence_splitter.split_into_sentences(text)
-    response = requests.post(ML_ENDPOINT, json={"segments": sentences})
+    data = json.dumps(sentences if "." in text else [text])
+    response = requests.get(ML_ENDPOINT, data=data)
     print(response)
 
     response = response.json()

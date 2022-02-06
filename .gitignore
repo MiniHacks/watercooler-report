@@ -61,3 +61,5 @@ violet-harassment-e63f719390aa.json
 *.wav
 *.mp4
 *.mkv
+simple_lstm_glove_vectors_val.h5
+simple_lstm_glove_vectors.h5
