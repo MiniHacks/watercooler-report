@@ -5,8 +5,8 @@
 
 ## Prizes
 
-Best Overall
-Best Use of Cloud Resources
+Best Overall  
+Best Use of Cloud Resources  
 Best Use of Google Cloud 
 
 ## Inspiration
