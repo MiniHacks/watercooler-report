@@ -1,23 +1,29 @@
 
 # Watercooler Report
 
-Detects and relays incidences of workplace harassment on Slack and over email.
+*Detects and relays incidences of workplace harassment on Slack and over email.*
+
+## Prizes
+
+Best Overall
+Best Use of Cloud Resources
+Best Use of Google Cloud 
 
 ## Inspiration
 
 Victims of harassment often fear that there will be backlash if they report incidents. Programmatically detecting them takes the burden off the victims of harassment while still preserving privacy.
 
-Watercooler Report will automatically identify and report cases of sexual harassment going on over Slack or email then relay them to an authority figure. No longer will three out of every four sexual harassment cases go unreported.
+**Watercooler Report** will *automatically* identify and report cases of sexual harassment going on over Slack or email then relay them to an authority figure. **No longer will three out of every four sexual harassment cases go unreported.**
 
 One the most impressive features is that the model has a sophisticated attention mechanism and is an LSTM so we are not purely dependent on keywords. The model can understand metaphors and is great at flagging so-called "benevolent" sexism such as humor that reinforces gender stereotypes. The judgements are also not specifically tied to gender identity, the bot can also detect harassment against men and those with other identities.
 
 ## How we built it
 
-- FastAPI REST API microservice to host the ML model. The model is a biLSTM with an attention mechanism based on GloVe embeddings. We tried alternatives, including gradient-boosted trees (didn't provide as effective of a gradient), logistic regression from embeddings (worse accuracy) and several permutations of LSTMs. The model is hosted on Google Compute Engine and most of the development was done there due to dependency issues.
-- Slack bot with Twilio as an alternative notification mechanism, built with Flask, hosted on a Google Compute Engine instance and forwarded via nginx.
-- Google Workspaces integration to survey emails from an organization and forward them to an administrator if the model flags them.
-- Domain.com to get a domain for our mailserver (and API, not that anyone will see that).
-- We wrote code to use Google Cloud Storage and Google Cloud Speech to upload and then transcribe blobs of audio or video, though we did not end up using it in our integrations.
+- **FastAPI REST API** microservice to host the ML model. The model is a **biLSTM** with an attention mechanism based on **GloVe** embeddings. We tried alternatives, including **gradient-boosted trees** (didn't provide as effective of a gradient), **logistic regression** from embeddings (worse accuracy) and several permutations of **LSTMs**. The model is hosted on **Google Compute Engine** and most of the development was done there due to dependency issues.
+- **Slack** bot with **Twilio** as an alternative notification mechanism, built with **Flask**, hosted on a **Google Compute Engine** instance and forwarded via **nginx**.
+- **Google Workspaces** integration to survey emails from an organization and forward them to an administrator if the model flags them.
+- **Domain.com** to get a domain for our mailserver (and API, not that anyone will see that).
+- We wrote code to use **Google Cloud Storage** and **Google Cloud Speech** to upload and then transcribe blobs of audio or video, though we did not end up using it in our integrations.
 
 ## Challenges we ran into
 
